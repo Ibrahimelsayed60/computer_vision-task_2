@@ -101,6 +101,61 @@
         <attribute name="title">
          <string>Active Contour</string>
         </attribute>
+        <widget class="QWidget" name="">
+         <property name="geometry">
+          <rect>
+           <x>33</x>
+           <y>40</y>
+           <width>801</width>
+           <height>441</height>
+          </rect>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,5">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="font">
+               <font>
+                <pointsize>16</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Image with border</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_4">
+              <property name="font">
+               <font>
+                <pointsize>14</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Start</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton_5">
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>Clear</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="PlotWidget" name="image_1" native="true"/>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </widget>
      </item>
@@ -119,6 +174,14 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PlotWidget</class>
+   <extends>QWidget</extends>
+   <header>pyqtgraph</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
