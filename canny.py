@@ -1,3 +1,4 @@
+
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -122,35 +123,6 @@ def Non_Max_Supp(qn, magni, D):
                     M[i,j] = 0
     return M
 
-def color(quant, mag):
-    color = np.zeros((mag.shape[0], mag.shape[1], 3), np.uint8)
-    a, b = np.shape(mag)
-    for i in range(a-1):
-        for j in range(b-1):
-            if quant[i,j] == 0:
-                if mag[i,j] != 0:
-                    color[i,j,0] = 255
-                else:
-                    color[i,j,0] = 0
-            if quant[i,j] == 1:
-                if mag[i,j] != 0:
-                    color[i,j,1] = 255
-                else:
-                    color[i,j,1] = 0
-            if quant[i,j] == 2:
-                if mag[i,j] != 0:
-                    color[i,j,2] = 255
-                else:
-                    color[i,j,2] = 0
-            if quant[i,j] == 3:
-                if mag[i,j] != 0:
-                    color[i,j,0] = 255
-                    color[i,j,1] = 255
-                    
-                else:
-                    color[i,j,0] = 0
-                    color[i,j,1] = 0
-    return color
 
 def _double_thresholding(g_suppressed, low_threshold, high_threshold):
     g_thresholded = np.zeros(g_suppressed.shape)
@@ -175,3 +147,119 @@ def _hysteresis(g_thresholded):
             elif val == 255:
                 g_strong[i,j] = 255		# strong edge remains as strong edge
     return g_strong
+
+'''#%% [markdown]
+# # Step 1 Specify sigma and T value Also calculate Gradient masks
+# Here you will give the values of sigma and T(0-1). This will create the size of filter automatically. We generate gradient masks in x and y directions i.e. Gx and Gy
+
+#%%
+sigma = 0.5
+T = 0.3
+x, y = MaskGeneration(T, sigma)
+gauss = Gaussian(x, y, sigma)
+
+
+#%%
+gx = -Create_Gx(x, y)
+gy = -Create_Gy(x, y)
+
+#%% [markdown]
+# # Step 2 Reading and converting image into grayscale
+# Here we convert the image into grayscale image for easy processing and finding edges
+
+#%%
+image = cv2.imread('circle.jpg')
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+plt.figure(figsize = (8,8))
+plt.imshow(gray, cmap='gray')
+plt.show()
+
+#%% [markdown]
+# ## Smoothing
+# Here we smooth the image to reduce the intensity in the pixels
+
+#%%
+smooth_img = smooth(gray, gauss)
+plt.figure(figsize = (8,8))
+plt.imshow(smooth_img, cmap='gray')
+
+#%% [markdown]
+# # Step 3 Applying the Gradient masks
+# In this step we apply the gradient x and y masks on the image.
+
+#%%
+fx = ApplyMask(smooth_img, gx)
+plt.figure(figsize = (8,8))
+plt.imshow(fx, cmap='gray')
+
+
+#%%
+fy = ApplyMask(smooth_img, gy)
+plt.figure(figsize = (8,8))
+plt.imshow(fy, cmap='gray')
+
+#%% [markdown]
+# # Step 4 Gradient magnitude
+# In this step we calculate the gradient magnitude at every pixel location
+
+#%%
+mag = Gradient_Magnitude(fx, fy)
+mag = mag.astype(int)
+plt.figure(figsize = (8,8))
+plt.imshow(mag, cmap='gray')
+print('max', mag.max())
+print('min', mag.min())
+
+#%% [markdown]
+# # STEP 5 Gradient Direction
+# In this step we find direction of gradient at each pixel of the image.
+
+#%%
+Angle = Gradient_Direction(fx, fy)
+plt.figure(figsize = (5,5))
+plt.imshow(Angle, cmap='gray')
+print('max', Angle.max())
+print('min', Angle.min())
+
+#%% [markdown]
+# # Step 6 Quantization of angles and Non-Max Suppression
+# In this step we quantize our angles into 4 groups 0, 1, 2, 3. Then we apply non-maximum suppression on it to make the edges thin
+
+#%%
+quantized = Digitize_angle(Angle)
+nms = Non_Max_Supp(quantized, Angle, mag)
+plt.figure(figsize = (10,10))
+plt.imshow(nms, cmap='gray')
+print('max', nms.max())
+print('min', nms.min())
+
+#%% [markdown]
+# ### Colorized Image for visualiztion of angles
+
+#%%
+colorized = color(quantized, mag)
+plt.figure(figsize = (7,7))
+plt.imshow(colorized)
+cv2.imwrite('color.jpg',colorized)
+
+#%% [markdown]
+# # Step 7 Double Threshold and Hysteresis
+# In this step we apply double threshold Tl and Th to our non-maximum suppressed images. After that we apply Hysteresis algorithm to get resultant edges of the image.
+
+#%%
+threshold = _double_thresholding(nms, 30, 60)
+cv2.imwrite('double_thresholded.jpg', threshold )
+plt.figure(figsize = (10,10))
+plt.imshow(threshold, cmap='gray')
+
+
+#%%
+hys = _hysteresis(threshold)
+cv2.imwrite('Result.jpg', hys)
+plt.figure(figsize = (10,10))
+plt.imshow(hys, cmap='gray')
+
+
+#%%
+'''
+
