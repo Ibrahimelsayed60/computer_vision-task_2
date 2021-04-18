@@ -6,6 +6,7 @@ import sys
 import random
 import cv2
 import snake as sn
+import canny 
 import math
 import pyqtgraph as pg
 import numpy as np

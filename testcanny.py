@@ -1,7 +1,6 @@
 
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
 import math
 
 def sHalf(T, sigma):
@@ -192,6 +191,4 @@ nms = Non_Max_Supp(quantized, Angle, mag)
 # In this step we apply double threshold Tl and Th to our non-maximum suppressed images. After that we apply Hysteresis algorithm to get resultant edges of the image.
 threshold = _double_thresholding(nms, 30, 60)
 hys = _hysteresis(threshold)
-
-
 
