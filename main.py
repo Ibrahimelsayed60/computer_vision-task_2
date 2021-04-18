@@ -21,8 +21,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.image_1.getPlotItem().hideAxis('left')
 
 
-        file_to_load = "images/example.jpg"
-        self.image_1 = cv2.imread( file_to_load, cv2.IMREAD_COLOR )
+        file_to_load = "images/example3.jpg"
+        self.image_1 = cv2.rotate(cv2.imread( file_to_load, cv2.IMREAD_COLOR ),cv2.ROTATE_90_CLOCKWISE)
         # self.ui.pushButton.clicked.connect(self.open_canny_tab)
         # self.ui.pushButton_2.clicked.connect(self.open_Hough_tab)
         # self.ui.pushButton_3.clicked.connect(self.open_Active_contour_tab)

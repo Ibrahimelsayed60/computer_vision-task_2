@@ -179,17 +179,17 @@ class Snake:
 
     def remove_overlaping_points(self):
         
-        size_points = len(self.points)
+        snake_size = len( self.points )
 
-        for i in range(0,size_points+1,1):
-            for j in range(size_points-1,i+1,-1):
-                if i==j:
+        for i in range( 0, snake_size ):
+            for j in range( snake_size-1, i+1, -1 ):
+                if i == j:
                     continue
-        
-                current = self.points[ i ]
+
+                curr = self.points[ i ]
                 end = self.points[ j ]
 
-                dist = Snake.dist( current, end )
+                dist = Snake.dist( curr, end )
 
                 if dist < self.min_distance_b_points:
                     remove_indexes = range( i+1, j ) if (i!=0 and j!=snake_size-1) else [j]
