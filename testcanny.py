@@ -4,27 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 
-class canny :
-
-    sigma = 0.5
-    T = 0.3
-    x, y = MaskGeneration(T, sigma)
-    gauss = Gaussian(x, y, sigma)
-    gx = -Create_Gx(x, y)
-    gy = -Create_Gy(x, y)
-    image = cv2.imread('lena.jpg')
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    smooth_img = smooth(gray, gauss)
-    fx = ApplyMask(smooth_img, gx)
-    fy = ApplyMask(smooth_img, gy)
-    mag = Gradient_Magnitude(fx, fy)
-    mag = mag.astype(int)
-    Angle = Gradient_Direction(fx, fy)
-    quantized = Digitize_angle(Angle)
-    nms = Non_Max_Supp(quantized, Angle, mag)
-    threshold = _double_thresholding(nms, 30, 60)
-    hys = _hysteresis(threshold)
-
 def sHalf(T, sigma):
     temp = -np.log(T) * 2 * (sigma ** 2)
     return np.round(np.sqrt(temp))
@@ -168,3 +147,51 @@ def _hysteresis(g_thresholded):
             elif val == 255:
                 g_strong[i,j] = 255		# strong edge remains as strong edge
     return g_strong
+
+
+# Step 1 Specify sigma and T value Also calculate Gradient masks
+# Here you will give the values of sigma and T(0-1). This will create the size of filter automatically. We generate gradient masks in x and y directions i.e. Gx and Gy
+
+sigma = 0.5
+T = 0.3
+x, y = MaskGeneration(T, sigma)
+gauss = Gaussian(x, y, sigma)
+gx = -Create_Gx(x, y)
+gy = -Create_Gy(x, y)
+
+# Step 2 Reading and converting image into grayscale
+# Here we convert the image into grayscale image for easy processing and finding edges
+image = cv2.imread('lena.jpg')
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+# Smoothing
+# Here we smooth the image to reduce the intensity in the pixels
+smooth_img = smooth(gray, gauss)
+
+# Step 3 Applying the Gradient masks
+# In this step we apply the gradient x and y masks on the image.
+fx = ApplyMask(smooth_img, gx)
+fy = ApplyMask(smooth_img, gy)
+
+# Step 4 Gradient magnitude
+# In this step we calculate the gradient magnitude at every pixel location
+mag = Gradient_Magnitude(fx, fy)
+mag = mag.astype(int)
+
+# STEP 5 Gradient Direction
+# In this step we find direction of gradient at each pixel of the image.
+Angle = Gradient_Direction(fx, fy)
+
+# Step 6 Quantization of angles and Non-Max Suppression
+# In this step we quantize our angles into 4 groups 0, 1, 2, 3. Then we apply non-maximum suppression on it to make the edges thin
+quantized = Digitize_angle(Angle)
+nms = Non_Max_Supp(quantized, Angle, mag)
+
+
+# Step 7 Double Threshold and Hysteresis
+# In this step we apply double threshold Tl and Th to our non-maximum suppressed images. After that we apply Hysteresis algorithm to get resultant edges of the image.
+threshold = _double_thresholding(nms, 30, 60)
+hys = _hysteresis(threshold)
+
+
+
